@@ -8,9 +8,16 @@ env.config({path: './config/config.env'})
 //start app
 const app = express();
 const port = process.env.PORT||5000;
-app.listen(port, ()=>{
+const server = app.listen(port, ()=>{
     console.log(`Server running on port ${port} and environment is ${process.env.NODE_ENV}`)
 })
+
+//handle unhandled promise rejections
+process.on('unhandledRejection', (err,promise)=>{
+    console.log(`Error : ${err.message}`);
+    //stop server
+    server.close(()=>{process.exit(1)});
+});
 
 //health check 
 app.get('/health', (request, response) => {
@@ -18,13 +25,16 @@ app.get('/health', (request, response) => {
 });
 
 //Route files
-const bootcamps = require('./routes/bootcamps');
-app.use('/api/v1/bootcamps', bootcamps);
+const bootcampRouts = require('./routes/BootcampRoutes');
+app.use('/api/v1/bootcamps', bootcampRouts);
 
 //logger
 //const logger = require('./middleware/logger');
 if(process.env.NODE_ENV==='dev'){
     app.use(morgan('dev'))
 }
-//app.use(morgan);
+
+//connect database
+const connectDB = require('./config/db');
+connectDB();
 
