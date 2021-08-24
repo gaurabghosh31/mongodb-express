@@ -9,3 +9,9 @@ npm i -D nodemon
 
 # for logging
 npm i morgan
+
+# slugify
+npm i slugify
+
+# geocoder
+npm i node-geocoder
